@@ -1,0 +1,50 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "functions": {
+    "source": "functions"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "hytide-crm",
+          "appId": "1:709333701369:android:851e1177d9bd0ea87f8828",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "hytide-crm",
+          "appId": "1:709333701369:ios:c0fa978c54b548c77f8828",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "hytide-crm",
+          "appId": "1:709333701369:ios:c0fa978c54b548c77f8828",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "hytide-crm",
+          "configurations": {
+            "android": "1:709333701369:android:851e1177d9bd0ea87f8828",
+            "ios": "1:709333701369:ios:c0fa978c54b548c77f8828",
+            "macos": "1:709333701369:ios:c0fa978c54b548c77f8828",
+            "web": "1:709333701369:web:3e0711c34d44f1597f8828"
+          }
+        }
+      }
+    }
+  }
+}

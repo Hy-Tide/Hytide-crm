@@ -1,0 +1,304 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper Functions ──────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+
+    function isManager() {
+      return isAuthenticated() && (getUserRole() == 'admin' || getUserRole() == 'manager');
+    }
+
+    function isSalesStaff() {
+      return isAuthenticated();
+    }
+
+    // ─── Users ────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Users can read their own data; admins/managers can read all
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == userId || isManager());
+
+      // Only admins can update roles or create/delete users
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+
+      // Devices for FCM tokens
+      match /devices/{deviceId} {
+        allow read, write: if isAuthenticated() &&
+          (request.auth.uid == userId || isManager());
+      }
+    }
+
+    // ─── Leads ────────────────────────────────────────────────────────────
+    match /leads/{leadId} {
+      // Admin/Manager can see all; Sales can only see assigned leads
+      allow read: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow create: if isSalesStaff();
+
+      allow update: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow delete: if isManager();
+
+      // Lead activities subcollection
+      match /activities/{activityId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isManager();
+      }
+
+      // Lead notes subcollection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isManager();
+      }
+    }
+
+    // ─── Follow-ups ───────────────────────────────────────────────────────
+    match /followUps/{followupId} {
+      allow read: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow create: if isSalesStaff();
+
+      allow update: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow delete: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      // Follow-up notes subcollection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          (isManager() || resource.data.createdBy == request.auth.uid);
+      }
+    }
+
+    match /followups/{followupId} {
+      allow read: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow create: if isSalesStaff();
+
+      allow update: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow delete: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+    }
+
+    // ─── Clients ──────────────────────────────────────────────────────────
+    match /clients/{clientId} {
+      allow read: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow create: if isSalesStaff();
+
+      allow update: if isAuthenticated() &&
+        (isManager() || resource.data.assignedTo == request.auth.uid);
+
+      allow delete: if isManager();
+
+      // Client activities subcollection
+      match /activities/{activityId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+
+      // Client notes subcollection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          (isManager() || resource.data.createdBy == request.auth.uid);
+      }
+    }
+
+    // ─── Projects ─────────────────────────────────────────────────────────
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isSalesStaff();
+
+      allow update: if isAuthenticated() &&
+        (isManager() || request.auth.uid in resource.data.assignedTo || resource.data.createdBy == request.auth.uid);
+
+      allow delete: if isManager();
+
+      // Project activities subcollection
+      match /activities/{activityId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+
+      // Project notes subcollection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          (isManager() || resource.data.createdBy == request.auth.uid);
+      }
+
+      // Project requirements subcollection
+      match /requirements/{reqId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      // Project tasks subcollection
+      match /tasks/{taskId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      // Project milestones subcollection
+      match /milestones/{milestoneId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      // Project document links (subcollection)
+      match /links/{linkId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+    }
+
+    // ─── Quotations ───────────────────────────────────────────────────────
+    match /quotations/{quotationId} {
+      allow read: if isAuthenticated();
+      allow create: if isSalesStaff();
+      allow update: if isAuthenticated() &&
+        (isManager() || resource.data.createdBy == request.auth.uid);
+      allow delete: if isManager();
+
+      // Quotation items subcollection
+      match /items/{itemId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated() &&
+          (isManager() || get(/databases/$(database)/documents/quotations/$(quotationId)).data.createdBy == request.auth.uid);
+      }
+
+      // Quotation activities subcollection
+      match /activities/{activityId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+
+      // Quotation notes subcollection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          (isManager() || resource.data.createdBy == request.auth.uid);
+      }
+    }
+
+    // ─── Counters (Atomic Sequencers) ──────────────────────────────────────
+    match /counters/{counterId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ─── Documents ────────────────────────────────────────────────────────
+    match /documents/{documentId} {
+      allow read: if isAuthenticated();
+      allow create: if isSalesStaff();
+      allow delete: if isAuthenticated() &&
+        (isManager() || resource.data.uploadedBy == request.auth.uid);
+      allow update: if isManager();
+    }
+
+    // ─── Notifications ────────────────────────────────────────────────────
+    match /notifications/{notifId} {
+      // Users can only read their own notifications
+      allow read: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+
+      // Users can mark their own notifications as read
+      allow update: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasAny(['isRead', 'readAt']);
+
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Activities ───────────────────────────────────────────────────────
+    match /activities/{activityId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isManager();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Settings ─────────────────────────────────────────────────────────
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ─── Expense Accounts ───────────────────────────────────────────────────
+    match /expenseAccounts/{accountId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // ─── Expense Account Summaries ──────────────────────────────────────────
+    match /expenseAccountSummaries/{accountId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // ─── Expense Dashboard Summaries ────────────────────────────────────────
+    match /expenseDashboardSummaries/{summaryId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // ─── Expenses ───────────────────────────────────────────────────────────
+    match /expenses/{expenseId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (isAdmin() || isManager());
+      allow update: if isAuthenticated() && (isAdmin() || isManager());
+      allow delete: if isAdmin();
+
+      // Audit activity subcollection
+      match /activities/{activityId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+    }
+
+    // ─── Money Transactions (Ledger) ─────────────────────────────────────────
+    match /moneyTransactions/{transactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (isAdmin() || isManager());
+      allow update: if isAuthenticated() && (isAdmin() || isManager());
+      allow delete: if isAdmin();
+    }
+
+    // ─── Default Deny ─────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
