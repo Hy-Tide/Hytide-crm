@@ -48,7 +48,7 @@ class LeadStatusDialog extends StatefulWidget {
     return show(
       context,
       currentStatus: lead.status,
-      companyName: lead.companyName.isNotEmpty ? lead.companyName : lead.contactPerson,
+      companyName: lead.companyName.isNotEmpty ? lead.companyName : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
     );
   }
 

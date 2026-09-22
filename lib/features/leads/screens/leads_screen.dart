@@ -169,33 +169,23 @@ class _LeadsScreenState extends ConsumerState<LeadsScreen> {
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
-            IconButton(
-              onPressed: () => LeadSortSheet.show(context),
-              icon: const Icon(Icons.sort_rounded),
-              style: IconButton.styleFrom(
-                backgroundColor: isDark
-                    ? AppColors.surfaceVariantDark
-                    : AppColors.surfaceVariant,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.xs),
-            // MORE FILTERS DROPDOWN
-            PopupMenuButton<LeadStatus>(
-              icon: const Icon(Icons.filter_list_rounded),
+            PopupMenuButton<LeadPriority>(
+              icon: const Icon(Icons.flag_rounded),
+              tooltip: 'Filter by Priority',
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               color: isDark ? AppColors.surfaceDark : Colors.white,
-              onSelected: (status) {
+              onSelected: (priority) {
                 ref.read(leadFilterProvider.notifier).state = filter.copyWith(
-                  statuses: {status},
+                  priorities: {priority},
                 );
               },
               itemBuilder: (ctx) => [
-                const PopupMenuItem(
+                const PopupMenuItem<LeadPriority>(
                   enabled: false,
                   child: Text(
-                    'More Stages',
+                    'Priority',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -203,13 +193,8 @@ class _LeadsScreenState extends ConsumerState<LeadsScreen> {
                     ),
                   ),
                 ),
-                ...[
-                  LeadStatus.contacted,
-                  LeadStatus.meetingScheduled,
-                  LeadStatus.proposalSent,
-                  LeadStatus.negotiation,
-                ].map(
-                  (s) => PopupMenuItem(value: s, child: Text(s.displayName)),
+                ...LeadPriority.values.map(
+                  (p) => PopupMenuItem(value: p, child: Text(p.displayName)),
                 ),
               ],
             ),
@@ -249,7 +234,7 @@ class _LeadsScreenState extends ConsumerState<LeadsScreen> {
           child: Row(
             children: [
               _buildFilterChip(
-                label: 'All',
+                label: 'All Statuses',
                 isActive: filter.status == null,
                 isDark: isDark,
                 onTap: () {
@@ -281,6 +266,7 @@ class _LeadsScreenState extends ConsumerState<LeadsScreen> {
             ],
           ),
         ),
+
         const SizedBox(height: AppSpacing.sm),
         Align(
           alignment: Alignment.centerRight,

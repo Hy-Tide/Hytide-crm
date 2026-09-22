@@ -15,8 +15,6 @@ class LeadModel extends Equatable {
   final String city;
   final String state;
   final String country;
-  final String industry;
-  final String jobTitle;
   final LeadSource leadSource;
   final LeadStatus status;
   final LeadPriority priority;
@@ -26,6 +24,7 @@ class LeadModel extends Equatable {
   final DateTime? expectedClosingDate;
   final String description;
   final String notes;
+  final List<String> interestedServices;
   final String createdBy;
   final String createdByName;
   final DateTime createdAt;
@@ -63,8 +62,6 @@ class LeadModel extends Equatable {
     this.city = '',
     this.state = '',
     this.country = '',
-    this.industry = '',
-    this.jobTitle = '',
     required this.leadSource,
     required this.status,
     required this.priority,
@@ -74,6 +71,7 @@ class LeadModel extends Equatable {
     this.expectedClosingDate,
     this.description = '',
     this.notes = '',
+    this.interestedServices = const [],
     required this.createdBy,
     this.createdByName = '',
     required this.createdAt,
@@ -104,8 +102,6 @@ class LeadModel extends Equatable {
       city: data['city'] as String? ?? '',
       state: data['state'] as String? ?? '',
       country: data['country'] as String? ?? '',
-      industry: data['industry'] as String? ?? '',
-      jobTitle: data['jobTitle'] as String? ?? '',
       leadSource: LeadSource.fromString(rawSource),
       status: LeadStatus.fromString(data['status'] as String? ?? 'newLead'),
       priority: LeadPriority.fromString(data['priority'] as String? ?? 'medium'),
@@ -115,6 +111,7 @@ class LeadModel extends Equatable {
       expectedClosingDate: (data['expectedClosingDate'] as Timestamp?)?.toDate(),
       description: data['description'] as String? ?? '',
       notes: data['notes'] as String? ?? '',
+      interestedServices: (data['interestedServices'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       createdBy: data['createdBy'] as String? ?? '',
       createdByName: data['createdByName'] as String? ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -141,8 +138,6 @@ class LeadModel extends Equatable {
       'city': city,
       'state': state,
       'country': country,
-      'industry': industry,
-      'jobTitle': jobTitle,
       'leadSource': leadSource.name,
       'source': leadSource.name, // compatibility
       'status': status.name,
@@ -155,6 +150,7 @@ class LeadModel extends Equatable {
           : null,
       'description': description,
       'notes': notes,
+      'interestedServices': interestedServices,
       'createdBy': createdBy,
       'createdByName': createdByName,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -181,17 +177,25 @@ class LeadModel extends Equatable {
     void addTokens(String text) {
       final clean = text.trim().toLowerCase();
       if (clean.isEmpty) return;
-      tokens.add(clean);
+      
+      // Add full string and all its prefixes
+      for (int i = 1; i <= clean.length; i++) {
+        tokens.add(clean.substring(0, i));
+      }
+      
+      // Add each word and all its prefixes
       final words = clean.split(RegExp(r'[\s\-@.]+'));
       for (final w in words) {
-        if (w.isNotEmpty) tokens.add(w);
+        if (w.isNotEmpty) {
+          for (int i = 1; i <= w.length; i++) {
+            tokens.add(w.substring(0, i));
+          }
+        }
       }
     }
 
     addTokens(companyName);
     addTokens(contactPerson);
-    addTokens(jobTitle);
-    addTokens(industry);
     addTokens(phone);
     addTokens(alternatePhone);
     addTokens(email);
@@ -211,8 +215,6 @@ class LeadModel extends Equatable {
     String? city,
     String? state,
     String? country,
-    String? industry,
-    String? jobTitle,
     LeadSource? leadSource,
     LeadStatus? status,
     LeadPriority? priority,
@@ -222,6 +224,7 @@ class LeadModel extends Equatable {
     DateTime? expectedClosingDate,
     String? description,
     String? notes,
+    List<String>? interestedServices,
     String? createdByName,
     DateTime? updatedAt,
     DateTime? lastContactedAt,
@@ -244,8 +247,6 @@ class LeadModel extends Equatable {
       city: city ?? this.city,
       state: state ?? this.state,
       country: country ?? this.country,
-      industry: industry ?? this.industry,
-      jobTitle: jobTitle ?? this.jobTitle,
       leadSource: leadSource ?? this.leadSource,
       status: status ?? this.status,
       priority: priority ?? this.priority,
@@ -255,6 +256,7 @@ class LeadModel extends Equatable {
       expectedClosingDate: expectedClosingDate ?? this.expectedClosingDate,
       description: description ?? this.description,
       notes: notes ?? this.notes,
+      interestedServices: interestedServices ?? this.interestedServices,
       createdBy: createdBy,
       createdByName: createdByName ?? this.createdByName,
       createdAt: createdAt,
@@ -282,6 +284,7 @@ class LeadModel extends Equatable {
         assignedTo,
         estimatedValue,
         expectedClosingDate,
+        interestedServices,
         isArchived,
         convertedToClient,
         updatedAt,

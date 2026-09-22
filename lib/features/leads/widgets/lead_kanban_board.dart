@@ -234,9 +234,15 @@ class _KanbanColumn extends ConsumerWidget {
         return AppColors.statusNew;
       case LeadStatus.contacted:
         return AppColors.statusContacted;
+      case LeadStatus.interested:
+        return AppColors.info;
+      case LeadStatus.notInterested:
+        return AppColors.textMuted;
+      case LeadStatus.noResponse:
+        return AppColors.warning;
       case LeadStatus.followUp:
         return AppColors.statusFollowUp;
-      case LeadStatus.meetingScheduled:
+      case LeadStatus.demoScheduled:
         return AppColors.statusMeeting;
       case LeadStatus.proposalSent:
         return AppColors.statusProposal;
@@ -288,7 +294,7 @@ class _KanbanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  lead.companyName.isNotEmpty ? lead.companyName : lead.contactPerson,
+                  lead.companyName.isNotEmpty ? lead.companyName : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                   style: AppTypography.labelMedium.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,

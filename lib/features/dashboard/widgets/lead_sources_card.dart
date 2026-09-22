@@ -39,6 +39,8 @@ class LeadSourcesCard extends ConsumerWidget {
         return const Color(0xFF0284C7); // Sky Blue
       case LeadSource.direct:
         return const Color(0xFF8B5CF6); // Purple
+      case LeadSource.freelancer:
+        return const Color(0xFF9333EA); // Purple
       case LeadSource.other:
         return const Color(0xFF64748B); // Slate
     }
@@ -66,6 +68,8 @@ class LeadSourcesCard extends ConsumerWidget {
         return Icons.alternate_email_rounded;
       case LeadSource.direct:
         return Icons.call_made_rounded;
+      case LeadSource.freelancer:
+        return Icons.work_outline_rounded;
       case LeadSource.other:
         return Icons.more_horiz_rounded;
     }

@@ -35,8 +35,11 @@ class AppAuthConstants {
 enum LeadStatus {
   newLead,
   contacted,
+  interested,
+  notInterested,
+  noResponse,
   followUp,
-  meetingScheduled,
+  demoScheduled,
   proposalSent,
   negotiation,
   won,
@@ -48,10 +51,16 @@ enum LeadStatus {
         return 'New';
       case LeadStatus.contacted:
         return 'Contacted';
+      case LeadStatus.interested:
+        return 'Interested';
+      case LeadStatus.notInterested:
+        return 'Not Interested';
+      case LeadStatus.noResponse:
+        return 'Haven\'t Responded';
       case LeadStatus.followUp:
         return 'Follow-up';
-      case LeadStatus.meetingScheduled:
-        return 'Meeting Scheduled';
+      case LeadStatus.demoScheduled:
+        return 'Demo Scheduled';
       case LeadStatus.proposalSent:
         return 'Proposal Sent';
       case LeadStatus.negotiation:
@@ -69,10 +78,17 @@ enum LeadStatus {
     switch (value) {
       case 'contacted':
         return LeadStatus.contacted;
+      case 'interested':
+        return LeadStatus.interested;
+      case 'notInterested':
+        return LeadStatus.notInterested;
+      case 'noResponse':
+        return LeadStatus.noResponse;
       case 'followUp':
         return LeadStatus.followUp;
-      case 'meetingScheduled':
-        return LeadStatus.meetingScheduled;
+      case 'meetingScheduled': // backward compatibility
+      case 'demoScheduled':
+        return LeadStatus.demoScheduled;
       case 'proposalSent':
         return LeadStatus.proposalSent;
       case 'negotiation':
@@ -133,6 +149,7 @@ enum LeadSource {
   coldCall,
   email,
   direct,
+  freelancer,
   other;
 
   String get displayName {
@@ -156,7 +173,9 @@ enum LeadSource {
       case LeadSource.email:
         return 'Email';
       case LeadSource.direct:
-        return 'Direct';
+        return 'Direct Enquiry';
+      case LeadSource.freelancer:
+        return 'Freelancer';
       case LeadSource.other:
         return 'Other';
     }
@@ -184,6 +203,8 @@ enum LeadSource {
         return LeadSource.email;
       case 'direct':
         return LeadSource.direct;
+      case 'freelancer':
+        return LeadSource.freelancer;
       case 'other':
         return LeadSource.other;
       default:

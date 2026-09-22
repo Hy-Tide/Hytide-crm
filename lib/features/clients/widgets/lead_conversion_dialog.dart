@@ -73,9 +73,7 @@ class _LeadConversionDialogState extends ConsumerState<LeadConversionDialog> {
     _pincodeController = TextEditingController(text: '');
     _notesController = TextEditingController(text: lead.notes);
 
-    _selectedIndustry = lead.industry.isNotEmpty && clientIndustries.contains(lead.industry)
-        ? lead.industry
-        : 'Technology';
+    _selectedIndustry = 'Technology';
     _selectedType = ClientType.newClient;
     _selectedPriority = ClientPriority.fromString(lead.priority.name);
     _selectedAssignedTo = lead.assignedTo;

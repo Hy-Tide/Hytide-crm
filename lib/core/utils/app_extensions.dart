@@ -93,9 +93,15 @@ extension LeadStatusExtensions on LeadStatus {
         return AppColors.statusNew;
       case LeadStatus.contacted:
         return AppColors.statusContacted;
+      case LeadStatus.interested:
+        return AppColors.info;
+      case LeadStatus.notInterested:
+        return AppColors.textMuted;
+      case LeadStatus.noResponse:
+        return AppColors.warning;
       case LeadStatus.followUp:
         return AppColors.statusFollowUp;
-      case LeadStatus.meetingScheduled:
+      case LeadStatus.demoScheduled:
         return AppColors.statusMeeting;
       case LeadStatus.proposalSent:
         return AppColors.statusProposal;
@@ -114,9 +120,15 @@ extension LeadStatusExtensions on LeadStatus {
         return AppColors.statusNewBg;
       case LeadStatus.contacted:
         return AppColors.statusContactedBg;
+      case LeadStatus.interested:
+        return AppColors.infoContainer;
+      case LeadStatus.notInterested:
+        return AppColors.surfaceVariant;
+      case LeadStatus.noResponse:
+        return AppColors.warningContainer;
       case LeadStatus.followUp:
         return AppColors.statusFollowUpBg;
-      case LeadStatus.meetingScheduled:
+      case LeadStatus.demoScheduled:
         return AppColors.statusMeetingBg;
       case LeadStatus.proposalSent:
         return AppColors.statusProposalBg;
@@ -135,9 +147,15 @@ extension LeadStatusExtensions on LeadStatus {
         return Icons.fiber_new_rounded;
       case LeadStatus.contacted:
         return Icons.phone_rounded;
+      case LeadStatus.interested:
+        return Icons.thumb_up_alt_rounded;
+      case LeadStatus.notInterested:
+        return Icons.thumb_down_alt_rounded;
+      case LeadStatus.noResponse:
+        return Icons.person_off_rounded;
       case LeadStatus.followUp:
         return Icons.schedule_rounded;
-      case LeadStatus.meetingScheduled:
+      case LeadStatus.demoScheduled:
         return Icons.calendar_today_rounded;
       case LeadStatus.proposalSent:
         return Icons.description_rounded;

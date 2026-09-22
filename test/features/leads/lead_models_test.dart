@@ -19,7 +19,6 @@ void main() {
       city: 'Mumbai',
       state: 'Maharashtra',
       country: 'India',
-      industry: 'Software',
       leadSource: LeadSource.website,
       status: LeadStatus.newLead,
       priority: LeadPriority.high,

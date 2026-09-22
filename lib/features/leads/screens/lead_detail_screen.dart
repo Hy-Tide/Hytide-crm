@@ -85,7 +85,7 @@ class _LeadDetailContent extends ConsumerWidget {
       decimalDigits: 0,
     );
     final valueText = currencyFmt.format(lead.estimatedValue);
-    final displayName = lead.companyName.isNotEmpty ? lead.companyName : lead.contactPerson;
+    final displayName = lead.companyName.isNotEmpty ? lead.companyName : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided');
 
     return CustomScrollView(
       slivers: [
@@ -564,13 +564,7 @@ class _LeadDetailContent extends ConsumerWidget {
                   value: lead.website,
                   isDark: isDark,
                 ),
-              if (lead.industry.isNotEmpty)
-                _buildGridItem(
-                  icon: Icons.category_outlined,
-                  label: 'Industry',
-                  value: lead.industry,
-                  isDark: isDark,
-                ),
+
               if (lead.address.isNotEmpty || lead.city.isNotEmpty)
                 _buildGridItem(
                   icon: Icons.location_on_outlined,

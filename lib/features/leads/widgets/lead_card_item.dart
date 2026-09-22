@@ -25,22 +25,7 @@ class LeadCardItem extends ConsumerWidget {
 
   const LeadCardItem({super.key, required this.lead, this.onRefresh});
 
-  Color _statusAccentColor(LeadStatus status) {
-    switch (status) {
-      case LeadStatus.won:
-        return AppColors.success;
-      case LeadStatus.lost:
-        return AppColors.error;
-      case LeadStatus.proposalSent:
-        return const Color(0xFF8B5CF6);
-      case LeadStatus.negotiation:
-        return AppColors.warning;
-      case LeadStatus.contacted:
-        return AppColors.info;
-      default:
-        return AppColors.primary;
-    }
-  }
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,7 +86,7 @@ class LeadCardItem extends ConsumerWidget {
                     AppAvatar(
                       name: lead.companyName.isNotEmpty
                           ? lead.companyName
-                          : lead.contactPerson,
+                          : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                       size: 48,
                     ),
                     const SizedBox(width: 12),
@@ -110,7 +95,7 @@ class LeadCardItem extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            lead.contactPerson,
+                            lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided',
                             style: AppTypography.heading3.copyWith(
                               fontWeight: FontWeight.w800,
                               color: isDark
@@ -265,89 +250,7 @@ class LeadCardItem extends ConsumerWidget {
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext ctx) {
-    return [
-      const PopupMenuItem(
-        value: 'view',
-        child: Row(
-          children: [
-            Icon(Icons.visibility_outlined, size: 16),
-            SizedBox(width: 8),
-            Text('View Details'),
-          ],
-        ),
-      ),
-      const PopupMenuItem(
-        value: 'edit',
-        child: Row(
-          children: [
-            Icon(Icons.edit_outlined, size: 16),
-            SizedBox(width: 8),
-            Text('Edit Lead'),
-          ],
-        ),
-      ),
-      const PopupMenuItem(
-        value: 'status',
-        child: Row(
-          children: [
-            Icon(Icons.swap_horiz_rounded, size: 16),
-            SizedBox(width: 8),
-            Text('Change Status'),
-          ],
-        ),
-      ),
-      if (lead.convertedToClient &&
-          lead.clientId != null &&
-          lead.clientId!.isNotEmpty)
-        const PopupMenuItem(
-          value: 'view_client',
-          child: Row(
-            children: [
-              Icon(Icons.business_rounded, size: 16, color: AppColors.success),
-              SizedBox(width: 8),
-              Text(
-                'View Client',
-                style: TextStyle(
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-        value: lead.isArchived ? 'unarchive' : 'archive',
-        child: Row(
-          children: [
-            Icon(
-              lead.isArchived
-                  ? Icons.unarchive_outlined
-                  : Icons.archive_outlined,
-              size: 16,
-            ),
-            const SizedBox(width: 8),
-            Text(lead.isArchived ? 'Unarchive' : 'Archive'),
-          ],
-        ),
-      ),
-      const PopupMenuItem(
-        value: 'delete',
-        child: Row(
-          children: [
-            Icon(
-              Icons.delete_outline_rounded,
-              color: AppColors.error,
-              size: 16,
-            ),
-            SizedBox(width: 8),
-            Text('Delete', style: TextStyle(color: AppColors.error)),
-          ],
-        ),
-      ),
-    ];
-  }
+
 
   // ─── Web card (existing layout — unchanged) ─────────────────────────────
 
@@ -384,7 +287,7 @@ class LeadCardItem extends ConsumerWidget {
                     AppAvatar(
                       name: lead.companyName.isNotEmpty
                           ? lead.companyName
-                          : lead.contactPerson,
+                          : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                       size: 40,
                     ),
                     const SizedBox(width: AppSpacing.sm),
@@ -395,7 +298,7 @@ class LeadCardItem extends ConsumerWidget {
                           Text(
                             lead.companyName.isNotEmpty
                                 ? lead.companyName
-                                : lead.contactPerson,
+                                : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                             style: AppTypography.labelLarge.copyWith(
                               fontWeight: FontWeight.w600,
                               color: isDark
@@ -782,52 +685,4 @@ class LeadCardItem extends ConsumerWidget {
   }
 }
 
-// ─── Quick action chip widget (Android only) ──────────────────────────────────
 
-class _QuickActionChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickActionChip({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: color.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 14),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

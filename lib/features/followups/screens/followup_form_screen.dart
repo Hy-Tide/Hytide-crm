@@ -420,73 +420,74 @@ class _FollowUpFormScreenState extends ConsumerState<FollowUpFormScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  // 1. Lead Selection Card
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: _selectedLeadId == null
-                            ? AppColors.warning.withOpacity(0.5)
-                            : theme.colorScheme.outlineVariant.withOpacity(0.5),
+                  // 1. Lead Selection Card (Only show if not pre-populated from Lead Detail)
+                  if (widget.initialLeadId == null || widget.initialLeadId!.isEmpty) ...[
+                    Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: _selectedLeadId == null
+                              ? AppColors.warning.withOpacity(0.5)
+                              : theme.colorScheme.outlineVariant.withOpacity(0.5),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.business_rounded, size: 20, color: AppColors.primary),
-                              const SizedBox(width: AppSpacing.xs),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.business_rounded, size: 20, color: AppColors.primary),
+                                const SizedBox(width: AppSpacing.xs),
+                                Text(
+                                  'Linked Lead *',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const Spacer(),
+                                TextButton.icon(
+                                  icon: Icon(
+                                    _selectedLeadId != null
+                                        ? Icons.swap_horiz_rounded
+                                        : Icons.add_link_rounded,
+                                    size: 16,
+                                  ),
+                                  label: Text(_selectedLeadId != null ? 'Change' : 'Select Lead'),
+                                  onPressed: _isSubmitting ? null : _pickLead,
+                                ),
+                              ],
+                            ),
+                            if (_selectedLeadId != null) ...[
+                              const SizedBox(height: AppSpacing.xs),
                               Text(
-                                'Linked Lead *',
-                                style: theme.textTheme.titleSmall?.copyWith(
+                                _selectedCompanyName,
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              const Spacer(),
-                              TextButton.icon(
-                                icon: Icon(
-                                  _selectedLeadId != null
-                                      ? Icons.swap_horiz_rounded
-                                      : Icons.add_link_rounded,
-                                  size: 16,
+                              if (_selectedLeadName.isNotEmpty || _selectedContactPhone.isNotEmpty)
+                                Text(
+                                  '${_selectedLeadName.isNotEmpty ? _selectedLeadName : ""} · ${_selectedContactPhone.isNotEmpty ? _selectedContactPhone : ""}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
-                                label: Text(_selectedLeadId != null ? 'Change' : 'Select Lead'),
-                                onPressed: _isSubmitting ? null : _pickLead,
-                              ),
-                            ],
-                          ),
-                          if (_selectedLeadId != null) ...[
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              _selectedCompanyName,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            if (_selectedLeadName.isNotEmpty || _selectedContactPhone.isNotEmpty)
+                            ] else
                               Text(
-                                '${_selectedLeadName.isNotEmpty ? _selectedLeadName : ""} · ${_selectedContactPhone.isNotEmpty ? _selectedContactPhone : ""}',
+                                'Please choose the lead this follow-up belongs to.',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                  color: AppColors.error,
                                 ),
                               ),
-                          ] else
-                            Text(
-                              'Please choose the lead this follow-up belongs to.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: AppColors.error,
-                              ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
 
                   // 2. Title & Description
                   TextFormField(

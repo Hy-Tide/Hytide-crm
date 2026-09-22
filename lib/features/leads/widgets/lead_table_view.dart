@@ -150,7 +150,7 @@ class LeadTableView extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           AppAvatar(
-                            name: lead.companyName.isNotEmpty ? lead.companyName : lead.contactPerson,
+                            name: lead.companyName.isNotEmpty ? lead.companyName : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                             size: 34,
                           ),
                           const SizedBox(width: AppSpacing.sm),
@@ -161,7 +161,7 @@ class LeadTableView extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  lead.companyName.isNotEmpty ? lead.companyName : lead.contactPerson,
+                                  lead.companyName.isNotEmpty ? lead.companyName : (lead.contactPerson.isNotEmpty ? lead.contactPerson : 'No name provided'),
                                   style: AppTypography.labelMedium.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
